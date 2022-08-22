@@ -16,6 +16,12 @@ export DOCK_GID=20
 # FUNCTIONS
 #
 
+# dns.toys shorthand
+function dy ()
+{
+    dig +noall +answer +additional "$1" @dns.toys;
+}
+
 # Generate a new password, 45 characters long, of random characters, and send to pastebin
 function pw ()
 {
@@ -48,6 +54,24 @@ function mime() {
 
 function port() {
     lsof -i ":$@"
+}
+
+# Search a CSV in meaningful format
+# https://til.simonwillison.net/sqlite/one-line-csv-operations?utm_source=tldrnewsletter
+function csvs() {
+    USAGE="$0 <file> <query> --mode=<mode>${NC}"
+
+    if [ "$#" -lt "2" ]; then 
+        echo -e $USAGE;
+    else
+        # Check File
+        if [[ ! -f "$1" ]]; then
+            echo -e "${RED}Invalid file.${NC}"
+        else
+            # Run Query
+            sqlite3 :memory: -cmd ".mode column" -cmd ".import $1 temp" "$2"
+        fi
+    fi
 }
 
 # Remove all node_modules folders, recursively, from the folder you're in
@@ -90,5 +114,7 @@ alias tron="ssh sshtron.zachlatta.com"
 # OTHER
 #
 
-# https://github.com/nvbn/thefuck
-eval $(thefuck --alias)
+# Z-Lib, making it find-able to package installers.
+export LDFLAGS="-L/usr/local/opt/zlib/lib"
+export CPPFLAGS="-I/usr/local/opt/zlib/include"
+export PKG_CONFIG_PATH="/usr/local/opt/zlib/lib/pkgconfig"
